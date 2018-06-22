@@ -39,7 +39,7 @@ augroup LuaFiler
   autocmd!
   autocmd FileType *
     \ if isdirectory(@%)
-    \|   call luaeval("plugin.luafiler.render_dirs()")
+    \|   call luaeval("plugin.luafiler.render_dirs([[" . @% . "]])")
     \|   nnoremap <silent> WO :call<Space>luaeval('plugin.luafiler.open()')<CR>
     \|   nnoremap <silent> WV :call<Space>luaeval('plugin.luafiler.open("v")')<CR>
     \| endif
