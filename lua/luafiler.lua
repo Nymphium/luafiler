@@ -30,23 +30,26 @@ end
 local header_length = 5
 
 function luafiler.render_dirs(path)
-	path = path or lfs.currentdir()
 	local current_buf = api.nvim_get_current_buf()
 	local replace_tbl = {}
 	local file_attrs = {}
 
-	if not path:match('/$') then
-		path = path .. '/'
+	if path then
+		if not path:match('/$') then
+			path = path .. '/'
+		end
+
+		-- normalize path name
+		while path and path:match('%.%./$') do
+			path = path:match('^(.*/)[^/]+/%.%./$')
+		end
+
+		while path and path:match('%./$') do
+			path = path:match('^(.*/)%./$')
+		end
 	end
 
-	-- normalize path name
-	while path:match('%.%./$') do
-		path = path:match('^(.*/)[^/]+/%.%./$')
-	end
-
-	while path:match('%./$') do
-		path = path:match('^(.*/)%./$')
-	end
+	path = path or lfs.currentdir() .. "/"
 
 	for file in lfs.dir(path) do
 		local name = file
