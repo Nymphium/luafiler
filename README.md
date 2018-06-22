@@ -18,6 +18,9 @@ plugin/
 README.md
 ```
 
+# installation
+`NeoBundle Nymphium/luafiler` or something you like
+
 # module API
 The module is located `plugin.luafiler`.
 
