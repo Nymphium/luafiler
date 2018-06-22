@@ -1,6 +1,6 @@
 plugin = plugin or {}
 
-if plugin.filer then
+if plugin.luafiler then
 	return
 end
 
@@ -16,11 +16,11 @@ if not ok then
 end
 
 local bufs = {}
-local filer = {
+local luafiler = {
 	bufs = bufs
 }
 
-plugin.filer = filer
+plugin.luafiler = luafiler
 
 local function generate_header(path)
 	local eqs = ('='):rep(#path)
@@ -29,7 +29,7 @@ end
 
 local header_length = 5
 
-function filer.render_dirs(path)
+function luafiler.render_dirs(path)
 	path = path or lfs.currentdir()
 	local current_buf = api.nvim_get_current_buf()
 	local replace_tbl = {}
@@ -90,7 +90,7 @@ local opening_mode =
 				  return verror(("invalid mode `%s'"):format(k))
 			  end})
 
-function filer.open(mode)
+function luafiler.open(mode)
 	local current_line = api.nvim_win_get_cursor(api.nvim_get_current_win())[1] - header_length + 1
 
 	if current_line < 0 then
@@ -101,14 +101,14 @@ function filer.open(mode)
 	local buf_conts = bufs[current_buf]
 
 	if not buf_conts then
-		return verror("not in a filer buffer")
+		return verror("not in a luafiler buffer")
 	end
 
 	local cont = buf_conts[current_line]
 
 	if cont.attr.mode == 'directory' then
 		api.nvim_buf_set_option(current_buf, 'modifiable', true)
-		filer.render_dirs(buf_conts.root .. cont.name)
+		luafiler.render_dirs(buf_conts.root .. cont.name)
 		api.nvim_buf_set_option(current_buf, 'modifiable', false)
 	else
 		api.nvim_command(opening_mode[mode] .. buf_conts.root .. cont.name)
