@@ -1,2 +1,2 @@
-lua require("luafiler")
-
+" lua require("luafiler")
+call luafiler#load()

@@ -1,2 +1,4 @@
-lua require("luafiler")
+function! luafiler#load()
+	lua require("luafiler")
+endfunction
 
