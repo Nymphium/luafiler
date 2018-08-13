@@ -46,5 +46,9 @@ augroup LuaFiler
 augroup END
 ```
 
+## `g:luafiler_do_not_warn_on_start`
+When a vimrc is shared with users (e.g. root and normal users) and not all the users can access `luafilesystem` module, the one see the error message.
+If you want to avoid the message, set `g:luafiler_do_not_warn_on_start` with `1`
+
 # LICENSE
 MIT

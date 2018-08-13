@@ -12,7 +12,7 @@ local ok, lfs = pcall(function()
 end)
 
 if not ok then
-	return verror("lfs is not found; install `luafilesystem' module")
+	return error("lfs is not found; install `luafilesystem' module")
 end
 
 local bufs = {}
