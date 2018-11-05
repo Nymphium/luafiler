@@ -72,7 +72,11 @@ function luafiler.render_dirs(path)
 	end
 
 	table.sort(merged_tbl, function(a, b)
-		return a.name > b.name
+		return a.name:upper() < b.name:upper()
+	end)
+
+	table.sort(merged_tbl, function(a, b)
+		return a.attr.mode < b.attr.mode
 	end)
 
 	bufs[current_buf] = {root = path}
