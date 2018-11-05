@@ -63,19 +63,31 @@ function luafiler.render_dirs(path)
 		table.insert(file_attrs, attr)
 	end
 
-	local header = generate_header(path)
-	api.nvim_buf_set_lines(current_buf, 0, header_length - 1, nil, header)
-	api.nvim_buf_set_lines(current_buf, header_length - 1, -1, nil, replace_tbl)
-	api.nvim_buf_set_option(current_buf, 'modifiable', false)
-
-	bufs[current_buf] = {root = path}
-
+	local merged_tbl = {}
 	for i = 1, #replace_tbl do
-		bufs[current_buf][i] = {
+		merged_tbl[i] = {
 			name = replace_tbl[i],
 			attr = file_attrs[i]
 		}
 	end
+
+	table.sort(merged_tbl, function(a, b)
+		return a.name > b.name
+	end)
+
+	bufs[current_buf] = {root = path}
+	local now_buf = bufs[current_buf]
+
+	local names = {}
+	for i = 1, #merged_tbl do
+		names[i] = merged_tbl[i].name
+		now_buf[i] = merged_tbl[i]
+	end
+
+	local header = generate_header(path)
+	api.nvim_buf_set_lines(current_buf, 0, header_length - 1, nil, header)
+	api.nvim_buf_set_lines(current_buf, header_length - 1, -1, nil, names)
+	api.nvim_buf_set_option(current_buf, 'modifiable', false)
 end
 
 -- open file with vertical or horizontal
