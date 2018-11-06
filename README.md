@@ -4,22 +4,35 @@ luafiler
 simple filer for Neovim
 
 ```
-====================================
-/home/nymphium/.vim/bundle/luafiler/
-====================================
+=====================================
+/home/nymphium/works/github/luafiler/
+=====================================
 
-./
 ../
 .git/
-LICENSE
 autoload/
 lua/
 plugin/
+LICENSE
 README.md
 ```
 
 # installation
 `NeoBundle Nymphium/luafiler` or something you like
+
+# requirements
+install `luafilesystem` and add code to load lua modules at start
+
+```shell-session
+$ luarocks --local install luafilesystem
+$ cat <<EOL >> ~/.vimrc
+lua <<LUA
+  local version = _VERSION:match("%d+%.%d+")
+  package.path = package.path:gsub("/%d+%.%d+/", ("/%s/"):format(version))
+  package.cpath = package.cpath:gsub("/%d+%.%d+/", ("/%s/"):format(version))
+LUA
+EOL
+```
 
 # module API
 The module is located `plugin.luafiler`.
@@ -35,14 +48,10 @@ You can select the opening mode 'v'ertically or 'h'orizontally. By default the m
 Open directory with luafiler automatically, you can use automd like this:
 
 ```vim
-augroup LuaFiler
+augroup LuafilerSettings
   autocmd!
-  autocmd FileType *
-    \ if isdirectory(@%)
-    \|   call luaeval("plugin.luafiler.render_dirs([[" . @% . "]])")
-    \|   nnoremap <silent> WO :call<Space>luaeval('plugin.luafiler.open()')<CR>
-    \|   nnoremap <silent> WV :call<Space>luaeval('plugin.luafiler.open("v")')<CR>
-    \| endif
+  autocmd FileType * nnoremap <silent> WO :lua plugin.luafiler.open()<CR>
+  autocmd FileType * nnoremap <silent> WV :lua plugin.luafiler.open("v")<CR>
 augroup END
 ```
 

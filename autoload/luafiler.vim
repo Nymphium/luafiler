@@ -19,3 +19,12 @@ xpcall(require, handle, "luafiler")
 LUA
 endfunction
 
+augroup LuaFiler
+	autocmd!
+	autocmd VimEnter,BufNew *
+		\ if isdirectory(@%)
+		\|   call luaeval("plugin.luafiler.render_dirs([[" . @% . "]])")
+		\| endif
+	autocmd QuitPre * call luaeval('plugin.luafiler.delete()')
+augroup END
+

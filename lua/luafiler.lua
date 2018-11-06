@@ -90,7 +90,11 @@ function luafiler.render_dirs(path)
 	end
 
 	local header = generate_header(path)
+	api.nvim_buf_set_option(current_buf, 'modifiable', true)
+	api.nvim_buf_set_option(current_buf, 'filetype', 'luafiler')
+	api.nvim_command(([[setlocal statusline=👜Luafiler:\ %s]]):format(path))
 	api.nvim_buf_set_lines(current_buf, 0, header_length - 1, nil, header)
+	api.nvim_buf_set_name(current_buf, '/luafiler')
 	api.nvim_buf_set_lines(current_buf, header_length - 1, -1, nil, names)
 	api.nvim_buf_set_option(current_buf, 'modifiable', false)
 end
@@ -127,15 +131,22 @@ function luafiler.open(mode)
 	local cont = buf_conts[current_line]
 
 	if cont.attr.mode == 'directory' then
-		api.nvim_buf_set_option(current_buf, 'modifiable', true)
 		luafiler.render_dirs(buf_conts.root .. cont.name)
-		api.nvim_buf_set_option(current_buf, 'modifiable', false)
 	else
 		api.nvim_command(opening_mode[mode] .. buf_conts.root .. cont.name)
 
 		local list_win = api.nvim_list_wins()
 		table.sort(list_win)
 		api.nvim_set_current_win(list_win[#list_win])
+	end
+end
+
+function luafiler.delete()
+	for _, buf in pairs(api.nvim_list_bufs()) do
+		local name = api.nvim_buf_get_name(buf)
+		if name == "/luafiler" then
+			api.nvim_command('bd! ' .. tostring(buf))
+		end
 	end
 end
 
