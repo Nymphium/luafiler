@@ -31,8 +31,8 @@ local header_length = 5
 
 function luafiler.render_dirs(path)
 	local current_buf = api.nvim_get_current_buf()
-	local replace_tbl = {}
-	local file_attrs = {}
+	local files = {}
+	local dirs = {}
 
 	if path then
 		if not path:match('/$') then
@@ -55,37 +55,38 @@ function luafiler.render_dirs(path)
 		local name = file
 		local attr = lfs.attributes(path .. file)
 
-		if attr.mode == 'directory' then
-			name = name .. '/'
+		if name ~= "." then
+			if attr.mode == 'directory' then
+				name = name .. '/'
+
+				table.insert(dirs, {name = name, attr = attr})
+			else
+				table.insert(files, {name = name, attr = attr})
+			end
 		end
-
-		table.insert(replace_tbl, name)
-		table.insert(file_attrs, attr)
 	end
 
-	local merged_tbl = {}
-	for i = 1, #replace_tbl do
-		merged_tbl[i] = {
-			name = replace_tbl[i],
-			attr = file_attrs[i]
-		}
-	end
-
-	table.sort(merged_tbl, function(a, b)
+	table.sort(files, function(a, b)
 		return a.name:upper() < b.name:upper()
 	end)
 
-	table.sort(merged_tbl, function(a, b)
-		return a.attr.mode < b.attr.mode
+	table.sort(dirs, function(a, b)
+		return a.name:upper() < b.name:upper()
 	end)
 
 	bufs[current_buf] = {root = path}
 	local now_buf = bufs[current_buf]
 
 	local names = {}
-	for i = 1, #merged_tbl do
-		names[i] = merged_tbl[i].name
-		now_buf[i] = merged_tbl[i]
+
+	for i = 1, #dirs do
+		names[i] = dirs[i].name
+		now_buf[i] = dirs[i]
+	end
+
+	for j = 1, #files do
+		names[j + #dirs] = files[j].name
+		now_buf[j + #dirs] = files[j]
 	end
 
 	local header = generate_header(path)
