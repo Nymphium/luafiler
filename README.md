@@ -4,17 +4,16 @@ luafiler
 simple filer for Neovim
 
 ```
-====================================
-/home/nymphium/.vim/bundle/luafiler/
-====================================
+=====================================
+/home/nymphium/works/github/luafiler/
+=====================================
 
-./
 ../
 .git/
-LICENSE
 autoload/
 lua/
 plugin/
+LICENSE
 README.md
 ```
 
