@@ -11,6 +11,8 @@ local ok, lfs = pcall(function()
 	return require('lfs')
 end)
 
+local inspect = require('inspect')
+
 if not ok then
 	return error("lfs is not found; install `luafilesystem' module")
 end
@@ -19,6 +21,16 @@ local bufs = {}
 local luafiler = {
 	bufs = bufs
 }
+
+
+local get_buf_var = function(buf, var)
+	local ok, content = pcall(api.nvim_buf_get_var, buf, var)
+	if not ok then
+		return nil
+	else
+		return content
+	end
+end
 
 plugin.luafiler = luafiler
 
@@ -94,9 +106,10 @@ function luafiler.render_dirs(path)
 	api.nvim_buf_set_option(current_buf, 'filetype', 'luafiler')
 	api.nvim_command(([[setlocal statusline=👜Luafiler:\ %s]]):format(path))
 	api.nvim_buf_set_lines(current_buf, 0, header_length - 1, nil, header)
-	api.nvim_buf_set_name(current_buf, '/luafiler')
+	api.nvim_buf_set_name(current_buf, ("luafiler (%s)"):format(path))
 	api.nvim_buf_set_lines(current_buf, header_length - 1, -1, nil, names)
 	api.nvim_buf_set_option(current_buf, 'modifiable', false)
+	api.nvim_buf_set_var(current_buf, "is_luafiler", 1)
 end
 
 -- open file with vertical or horizontal
@@ -141,12 +154,11 @@ function luafiler.open(mode)
 	end
 end
 
-function luafiler.delete()
-	for _, buf in pairs(api.nvim_list_bufs()) do
-		local name = api.nvim_buf_get_name(buf)
-		if name == "/luafiler" then
-			api.nvim_command('bd! ' .. tostring(buf))
-		end
+function luafiler.delete(buf)
+	local name = api.nvim_buf_get_name(buf)
+	local is_luafiler = get_buf_var(buf, "is_luafiler")
+	if is_luafiler == 1 and api.nvim_buf_is_loaded(buf) then
+		api.nvim_command('bd! ' .. tostring(buf))
 	end
 end
 

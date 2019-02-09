@@ -21,10 +21,11 @@ endfunction
 
 augroup LuaFiler
 	autocmd!
-	autocmd VimEnter,BufNew *
-		\ if isdirectory(@%)
-		\|   call luaeval("plugin.luafiler.render_dirs([[" . @% . "]])")
+	autocmd VimEnter,BufEnter *
+		\ let bufname = expand('<afile>')
+		\| if isdirectory(bufname)
+		\|   call luaeval("plugin.luafiler.render_dirs([[" . bufname . "]])")
 		\| endif
-	autocmd QuitPre * call luaeval('plugin.luafiler.delete()')
+	autocmd BufHidden,QuitPre * call luaeval("plugin.luafiler.delete([[" . bufnr('%') . "]])")
 augroup END
 
